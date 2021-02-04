@@ -38,13 +38,21 @@ const BBox = styled.div`
   }
 `;
 
+const asdf = () => {
+  // 텐서플로 돌리고 
+  // 제플린 API 쏘고 [comment, setComment ] = useState 
+  // 이미지 지우고
+  // 이미지 다시넣고 
+
+}
+
 export default function PredictCard(props) {
   const ref = useRef(null);
   const objects = useObjects(ref, { modelUrl: "/models/"+ props.model + "/model.json"});
   console.log(objects);
   return (
     <Container>
-    <img ref={ref} src="/image2.jpg" />
+    <img ref={ref} onLoad={asdf} src="/image2.jpg" />
     {objects && objects.map(({ left, top, width, height, label, score }) => (
       <BBox
         left={left}

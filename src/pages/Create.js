@@ -7,7 +7,6 @@ import {
   Link,
   Typography,
   Button,
-  CircularProgress,
 } from "@material-ui/core";
 
 import Main from "../layouts/Main";
@@ -18,7 +17,6 @@ export default function Create() {
   const history = useHistory();
   const [selectedProject, setSelectedProject] = useState();
   const [selectedModel, setSelectedModel] = useState();
-  const [creating, setCreating] = useState();
 
 
   const onBack = (e) => {
@@ -66,10 +64,7 @@ export default function Create() {
                 color="primary"
                 fullWidth
                 disableElevation
-                disabled={!isReady || creating}
-                startIcon={
-                  creating && <CircularProgress color="inherit" size={24} />
-                }
+                disabled={!isReady}
               >
                 Predict
               </Button>

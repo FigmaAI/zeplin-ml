@@ -1,10 +1,10 @@
 [
   {
     "name": "SSD Mobilenet v1",
-    "value": "ssd_mobilenet_v1"
+    "value": "mobilenet_v1"
   },
   {
     "name": "SSD Mobilenet v2",
-    "value": "ssd_mobilenet_v2"
+    "value": "mobilenet_v2"
   }
 ]
