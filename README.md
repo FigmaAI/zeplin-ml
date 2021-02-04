@@ -1,14 +1,14 @@
 <p align="center">
-  <a href="https://slides.zeplin.xyz">
+  <a href="#">
     <img alt="Zeplin Slides" src="/logo.png" width="256" />
   </a>
 </p>
 <h1 align="center">
-  Zeplin Slides
+  Zeplin ML
 </h1>
 
 <h3 align="center">
-  Create presentations in Google Slides from Zeplin projects
+  Object detection from Zeplin projects based on machine learning
 </h3>
 
 
@@ -18,7 +18,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ### APIs
 
-This project uses [Zeplin API](https://docs.zeplin.dev) to fetch Zeplin projects and screens and [Google Slides API](https://developers.google.com/slides) to create presentations in Google Slides.
+This project uses [Zeplin API](https://docs.zeplin.dev) to fetch Zeplin projects and screens and [Object Detection API](https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd) of [Tenserflow](https://github.com/tensorflow/tfjs) to detect UI objects in Zeplin screen.
 
 ### Available Scripts
 
