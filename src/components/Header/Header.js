@@ -10,14 +10,14 @@ export default function Header() {
       <Box position="absolute" right={16} top={16}>
         <Link
           style={{ marginRight: 12 }}
-          href="https://github.com/mertkahyaoglu/zeplin-google-slides"
+          href="https://github.com/dusskapark/zeplin-ml"
           target="_blank"
           rel="noopener"
         >
           <img
             src="/github.svg"
             width="24"
-            alt="mertkahyaoglu/zeplin-google-slides"
+            alt="zeplin-ml"
           />
         </Link>
         {/*<Link
