@@ -16,6 +16,8 @@ import Detection from "../components/Detection";
 
 export default function Predict(props) {
   const [model, setModel] = useState(null);
+  const [detected, setDetected] = useState(null);
+  const [imgData, setImgData] = useState([]);
   // const [imageUrl, setImageUrl] = useState(null);
   // const [imgWidth, setImgWidth] = useState(null);
   // const [imgHeight, setImgHeight] = useState(null);
@@ -31,33 +33,35 @@ export default function Predict(props) {
     e.preventDefault();
     history.replace("/create");
   };
-  const onFetch = async () => {
-    const screens = await fetchProjectScreensGroupedBySection(query.pid);
 
-    screens.map((section, index) => {
-      console.log(section.id);
-      section.screens.map((screen, index) => {
-        // setImageUrl(screen.image.original_url);
-        // setImgWidth(screen.image.width);
-        // setImgHeight(screen.image.height);
-        console.log(screen);
-      });
-    });
+  const loadModel = async () => {
+    const loadedModel = await cocoSsd.load({ base: query.model });
+    // const loadedModel = await tf.loadGraphModel(
+    //   "/models/" + query.model + "/model.json"
+    // );
+    setModel(loadedModel);
   };
 
+  const onFetch = async () => {
+    const sections = await fetchProjectScreensGroupedBySection(query.pid);
+    console.log(sections);
+
+    for (var i = 1; i < sections.length; i++) {
+      await sections[i].screens.map((screen, index) => {
+        let img = {
+          id: screen.id,
+          image: screen.image,
+        };
+        setImgData([...imgData, img]);
+      });
+    }
+  };
+  console.log(imgData)
+
   useEffect(() => {
-    const loadModel = async () => {
-      const loadedModel = await cocoSsd.load({ base: query.model });
-      // const loadedModel = await tf.loadGraphModel(
-      //   "/models/" + query.model + "/model.json"
-      // );
-      setModel(loadedModel);
-    };
     loadModel();
     onFetch();
   }, []);
-
-  console.log(model);
 
   return (
     <Main>
@@ -71,6 +75,7 @@ export default function Predict(props) {
             imageUrl={imageUrl}
             width={imgWidth}
             height={imgHeight}
+            setDetected={setDetected}
           />
         )}
 

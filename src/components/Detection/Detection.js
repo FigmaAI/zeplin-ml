@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 
-const Detection = ({ model, imageUrl, imgWidth, imgHeight }) => {
+const Detection = ({ model, imageUrl, imgWidth, imgHeight, setDetected }) => {
 
-  async function run() {
+  async function run(props) {
     const img = document.getElementById("preview");
 
     // Classify the image
@@ -31,6 +31,7 @@ const Detection = ({ model, imageUrl, imgWidth, imgHeight }) => {
           predictions[i].bbox[1] > 10 ? predictions[i].bbox[1] - 5 : 10
         );
       }
+      setDetected(true);
     }
   }
 
