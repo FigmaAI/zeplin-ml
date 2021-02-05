@@ -46,8 +46,9 @@ export default function Predict(props) {
     const sections = await fetchProjectScreensGroupedBySection(query.pid);
     console.log(sections);
 
+    // 첫번째 배열은 비어있으므로 두번째 배열부터 반복
     for (var i = 1; i < sections.length; i++) {
-      await sections[i].screens.map((screen, index) => {
+      sections[i].screens.map((screen, index) => {
         let img = {
           id: screen.id,
           image: screen.image,
