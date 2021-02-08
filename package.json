@@ -16,7 +16,6 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "image-promise": "^7.0.1",
     "moment": "^2.24.0",
     "query-string": "^6.13.8",
     "react": "^16.13.1",
@@ -24,10 +23,7 @@
     "react-image-size": "^1.0.4",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
-    "react-tensorflow": "^2.1.0",
-    "styled-components": "^5.2.1",
-    "typeface-roboto": "^0.0.75",
-    "use-tensorflow": "^0.3.2"
+    "typeface-roboto": "^0.0.75"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -46,5 +42,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "https://public-cdn.zeplin.dev/"
 }

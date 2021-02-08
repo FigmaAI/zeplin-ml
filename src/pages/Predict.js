@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 
 import queryString from "query-string";
 import ArrowBack from "@material-ui/icons/ArrowBack";
-import { Box, Link } from "@material-ui/core";
+import { Box, Link, Button } from "@material-ui/core";
 
 import Main from "../layouts/Main";
 
@@ -16,16 +16,10 @@ import Detection from "../components/Detection";
 
 export default function Predict(props) {
   const [model, setModel] = useState(null);
-  const [detected, setDetected] = useState(null);
   const [imgData, setImgData] = useState([]);
-  // const [imageUrl, setImageUrl] = useState(null);
-  // const [imgWidth, setImgWidth] = useState(null);
-  // const [imgHeight, setImgHeight] = useState(null);
-
-  // 일단 임시로 이것을 사용
-  const imageUrl = "./image2.jpg";
-  const imgWidth = "600";
-  const imgHeight = "399";
+  const [round, setRound] = useState(null);
+  const [selectedData, setSelectedData] = useState(null);
+  const [totalLength, setTotalLength] = useState(null);
 
   const history = useHistory();
   const query = queryString.parse(history.location.search);
@@ -44,20 +38,35 @@ export default function Predict(props) {
 
   const onFetch = async () => {
     const sections = await fetchProjectScreensGroupedBySection(query.pid);
-    console.log(sections);
+    let data = [];
+    sections.map((section, index) => {
+      section.screens.map((screen, index) => {
+        const origin_img = screen.image.original_url;
+        const imgProxy = origin_img.replace(
+          "https://public-cdn.zeplin.dev/",
+          "/"
+        );
 
-    // 첫번째 배열은 비어있으므로 두번째 배열부터 반복
-    for (var i = 1; i < sections.length; i++) {
-      sections[i].screens.map((screen, index) => {
-        let img = {
+        const img = {
           id: screen.id,
-          image: screen.image,
+          imageUrl: imgProxy,
+          imgWidth: screen.image.width,
+          imgHeight: screen.image.height,
         };
-        setImgData([...imgData, img]);
+        data.push(img);
       });
-    }
+    });
+    console.log(data);
+    setImgData(data);
+    setRound(0);
+    setTotalLength(data.length);
+    setSelectedData(imgData[0]);
   };
-  console.log(imgData)
+
+  const onIncrease = () => {
+    setRound(round + 1);
+    setSelectedData(imgData[round]);
+  };
 
   useEffect(() => {
     loadModel();
@@ -67,18 +76,21 @@ export default function Predict(props) {
   return (
     <Main>
       {model === null && <Loader text="Loading the model" />}
-      {model !== null &&
-        imageUrl !== null &&
-        imgWidth !== null &&
-        imgHeight !== null && (
-          <Detection
-            model={model}
-            imageUrl={imageUrl}
-            width={imgWidth}
-            height={imgHeight}
-            setDetected={setDetected}
-          />
-        )}
+      {model !== null && selectedData !== null && (
+        <>
+          <Box marginBottom={2}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={onIncrease}
+              fullWidth
+            >
+              {round + 1} / {totalLength + 1}
+            </Button>
+          </Box>
+          <Detection data={selectedData} model={model} />
+        </>
+      )}
 
       <Box position="absolute" left={16} top={16}>
         <Link
