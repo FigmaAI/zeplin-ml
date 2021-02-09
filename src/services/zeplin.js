@@ -29,6 +29,12 @@ export async function fetchProjects() {
   return http.get(`${ZEPLIN_API_URL}/projects?limit=100`).then(handleResponse);
 }
 
+export async function CreateNote(pid, screenId, params) {
+  return http
+    .post(`${ZEPLIN_API_URL}/projects/${pid}/screens/${screenId}/notes`, params)
+    .then(handleResponse);
+}
+
 function fetchProjectScreens(pid) {
   return http
     .get(`${ZEPLIN_API_URL}/projects/${pid}/screens?sort=section`)

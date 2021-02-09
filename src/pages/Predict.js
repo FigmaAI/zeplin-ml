@@ -48,7 +48,8 @@ export default function Predict(props) {
         );
 
         const img = {
-          id: screen.id,
+          pid: query.pid,
+          screenId: screen.id,
           imageUrl: imgProxy,
           imgWidth: screen.image.width,
           imgHeight: screen.image.height,
@@ -56,6 +57,7 @@ export default function Predict(props) {
         data.push(img);
       });
     });
+    
     console.log(data);
     setImgData(data);
     setRound(0);
