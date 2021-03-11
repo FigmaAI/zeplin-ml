@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import {CreateNote} from "../../services/zeplin";
 
-const Detection = ({ model, data }) => {
+const Detection = ({ model, data, options }) => {
 
   async function run() {
     console.log(data);

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "@tensorflow/tfjs";
-import * as cocoSsd from "@tensorflow-models/coco-ssd";
-
 import { useHistory } from "react-router-dom";
+
+import * as tf from "@tensorflow/tfjs";
+import "@tensorflow/tfjs-backend-webgl";
+import * as automl from "@tensorflow/tfjs-automl";
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
 import queryString from "query-string";
 import ArrowBack from "@material-ui/icons/ArrowBack";
@@ -20,6 +22,7 @@ export default function Predict(props) {
   const [round, setRound] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const [totalLength, setTotalLength] = useState(null);
+  const [options, setOptions] = useState(null);
 
   const history = useHistory();
   const query = queryString.parse(history.location.search);
@@ -27,13 +30,19 @@ export default function Predict(props) {
     e.preventDefault();
     history.replace("/create");
   };
-
+  const loadedModel = "";
   const loadModel = async () => {
-    const loadedModel = await cocoSsd.load({ base: query.model });
-    // const loadedModel = await tf.loadGraphModel(
-    //   "/models/" + query.model + "/model.json"
-    // );
-    setModel(loadedModel);
+    if (query.model == "mobilenet_v1" || query.model == "mobilenet_v1") {
+      const loadedModel = await cocoSsd.load({ base: query.model });
+      setModel(loadedModel);
+    } else {
+      const loadedModel = await automl.loadObjectDetection(
+        "/models/" + query.model + "/model.json"
+      );
+      setModel(loadedModel);
+      const options = { score: 0.5, iou: 0.5, topk: 20 };
+      setOptions(options);
+    }
   };
 
   const onFetch = async () => {
@@ -57,7 +66,7 @@ export default function Predict(props) {
         data.push(img);
       });
     });
-    
+
     console.log(data);
     setImgData(data);
     setRound(0);
@@ -90,7 +99,7 @@ export default function Predict(props) {
               {round + 1} / {totalLength + 1}
             </Button>
           </Box>
-          <Detection data={selectedData} model={model} />
+          <Detection data={selectedData} model={model} options={options} />
         </>
       )}
 
