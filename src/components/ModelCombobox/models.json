@@ -1,13 +1,5 @@
 [
   {
-    "name": "SSD Mobilenet v1",
-    "value": "mobilenet_v1"
-  },
-  {
-    "name": "SSD Mobilenet v2",
-    "value": "mobilenet_v2"
-  },
-  {
     "name": "500 Dataset",
     "value": "ui-dataset"
   }

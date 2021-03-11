@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import * as tf from "@tensorflow/tfjs";
-import "@tensorflow/tfjs-backend-webgl";
+// import "@tensorflow/tfjs-backend-webgl";
 import * as automl from "@tensorflow/tfjs-automl";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
@@ -15,6 +15,8 @@ import Main from "../layouts/Main";
 import { fetchProjectScreensGroupedBySection } from "../services/zeplin";
 import Loader from "../components/Loader";
 import Detection from "../components/Detection";
+
+tf.setBackend("cpu");
 
 export default function Predict(props) {
   const [model, setModel] = useState(null);
@@ -32,17 +34,15 @@ export default function Predict(props) {
   };
   const loadedModel = "";
   const loadModel = async () => {
-    if (query.model == "mobilenet_v1" || query.model == "mobilenet_v1") {
-      const loadedModel = await cocoSsd.load({ base: query.model });
-      setModel(loadedModel);
-    } else {
-      const loadedModel = await automl.loadObjectDetection(
-        "/models/" + query.model + "/model.json"
-      );
-      setModel(loadedModel);
-      const options = { score: 0.5, iou: 0.5, topk: 20 };
-      setOptions(options);
-    }
+    const options = { score: 0.66, iou: 0.5, topk: 20 };
+    const loadedModel = await automl.loadObjectDetection(
+      "/models/" +
+        query.model +
+        "/model.json"
+      // "https://storage.googleapis.com/tfjs-testing/tfjs-automl/object_detection/model.json"
+    );
+    setModel(loadedModel);
+    setOptions(options);
   };
 
   const onFetch = async () => {

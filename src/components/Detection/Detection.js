@@ -1,59 +1,62 @@
 import React, { Fragment } from "react";
-import {CreateNote} from "../../services/zeplin";
+import { CreateNote } from "../../services/zeplin";
 
 const Detection = ({ model, data, options }) => {
-
-  async function run() {
+  
+  const run = async () => {
+    
     console.log(data);
     const preview = document.getElementById("preview");
+    const predictions = await model.detect(preview, options);
 
-    // Classify the image
-    if (preview != null) {
-      const predictions = await model.detect(preview);
-      console.log(predictions);
+    // const predictions =
+    //   options != null
+    //     ? await model.detect(preview, options)
+    //     : await model.detect(preview);
+    console.log(predictions);
 
-      const c = document.getElementById("canvas");
-      c.width = preview.width;
-      c.height = preview.height;
-      const context = c.getContext("2d");
-      context.drawImage(preview, 0, 0);
-      context.font = "16px Arial";
+    const c = document.getElementById("canvas");
+    c.width = data.imgWidth;
+    c.height = data.imgHeight;
+    const context = c.getContext("2d");
+    context.drawImage(preview, 0, 0);
+    context.font = "16px Arial";
 
-      console.log("number of detections: ", predictions.length);
-      for (let i = 0; i < predictions.length; i++) {
-        const content = predictions[i].class + " ( " + predictions[i].score.toFixed(2)*100 + "% )";
-        context.beginPath();
-        context.rect(...predictions[i].bbox);
-        context.lineWidth = 6;
-        context.strokeStyle = "white";
-        context.fillStyle = "white";
-        context.stroke();
-        context.fillText(
-          content,
-          predictions[i].bbox[0],
-          predictions[i].bbox[1] > 10 ? predictions[i].bbox[1] - 5 : 10
-        );
-        
-        const params = {
-          content: content,
-          position: {
-            x: predictions[i].bbox[0]/data.imgWidth,
-            y: predictions[i].bbox[1]/data.imgHeight,
-          },
-          color: "deep_purple",
-        };
+    console.log("number of detections: ", predictions.length);
 
-        const note = await CreateNote(data.pid, data.screenId, params);
-        console.log(note);
-      }
-    }
+    for (let i = 0; i < predictions.length; i++) {
+      const { box, label, score } = predictions[i];
+      const { left, top, width, height } = box;
+      const bbox = [left, top, width, height];
+
+      const percent = score * 100;
+      const content = label + " ( " + percent.toFixed(2) + "% )";
+      context.beginPath();
+      context.rect(...bbox);
+      context.lineWidth = 6;
+      context.strokeStyle = "white";
+      context.fillStyle = "white";
+      context.stroke();
+      context.fillText(
+        content,
+        left,
+        top > 10 ? top - 5 : 10
+      );
+
+      const params = {
+        content: content,
+        position: {
+          x: left / data.imgWidth,
+          y: top / data.imgHeight,
+        },
+        color: "deep_purple",
+      };
+
+      // const note = await CreateNote(data.pid, data.screenId, params);
+      // console.log(note);
+
+    };
   }
-
-  const onLoad = () => {
-    console.log("loaded");
-    run();
-  };
-
   return (
     <>
       {data === undefined && (
@@ -70,7 +73,7 @@ const Detection = ({ model, data, options }) => {
             src={data.imageUrl}
             width={data.imgWidth}
             height={data.imgHeight}
-            onLoad={onLoad}
+            onLoad={()=>{run()}}
             alt=""
             id="preview"
             crossOrigin="anonymous"
