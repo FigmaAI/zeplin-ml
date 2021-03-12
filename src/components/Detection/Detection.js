@@ -2,19 +2,11 @@ import React, { Fragment } from "react";
 import { CreateNote } from "../../services/zeplin";
 
 const Detection = ({ model, data, options }) => {
-  
   const run = async () => {
-    
     console.log(data);
     const preview = document.getElementById("preview");
-    const predictions = await model.detect(preview, options);
 
-    // const predictions =
-    //   options != null
-    //     ? await model.detect(preview, options)
-    //     : await model.detect(preview);
-    console.log(predictions);
-
+    // canvas 그리기
     const c = document.getElementById("canvas");
     c.width = data.imgWidth;
     c.height = data.imgHeight;
@@ -22,41 +14,76 @@ const Detection = ({ model, data, options }) => {
     context.drawImage(preview, 0, 0);
     context.font = "16px Arial";
 
-    console.log("number of detections: ", predictions.length);
+    if (options !== null) {
+      const predictions = await model.detect(preview, options);
+      console.log(predictions);
+      console.log("number of detections: ", predictions.length);
+      const context = c.getContext("2d");
 
-    for (let i = 0; i < predictions.length; i++) {
-      const { box, label, score } = predictions[i];
-      const { left, top, width, height } = box;
-      const bbox = [left, top, width, height];
+      if (predictions.length !== null) {
+        for (let i = 0; i < predictions.length; i++) {
+          const { box, label, score } = predictions[i];
+          const { left, top, width, height } = box;
+          const bbox = [left, top, width, height];
 
-      const percent = score * 100;
-      const content = label + " ( " + percent.toFixed(2) + "% )";
-      context.beginPath();
-      context.rect(...bbox);
-      context.lineWidth = 6;
-      context.strokeStyle = "white";
-      context.fillStyle = "white";
-      context.stroke();
-      context.fillText(
-        content,
-        left,
-        top > 10 ? top - 5 : 10
-      );
+          const percent = score * 100;
+          const content = label + " ( " + percent.toFixed(2) + "% )";
+          context.beginPath();
+          context.rect(...bbox);
+          context.lineWidth = 6;
+          context.strokeStyle = "white";
+          context.fillStyle = "white";
+          context.stroke();
+          context.fillText(content, left, top > 10 ? top - 5 : 10);
 
-      const params = {
-        content: content,
-        position: {
-          x: left / data.imgWidth,
-          y: top / data.imgHeight,
-        },
-        color: "deep_purple",
-      };
+          const params = {
+            content: content,
+            position: {
+              x: left / c.width,
+              y: top / c.height,
+            },
+            color: "peach",
+          };
 
-      // const note = await CreateNote(data.pid, data.screenId, params);
-      // console.log(note);
+          const note = await CreateNote(data.pid, data.screenId, params);
+          console.log(note);
+        }
+      }
+    } else {
+      const predictions = await model.detect(preview);
+      console.log(predictions);
+      console.log("number of detections: ", predictions.length);
 
-    };
-  }
+      for (let i = 0; i < predictions.length; i++) {
+        const percent = predictions[i].score * 100;
+        const content =
+          predictions[i].class + " ( " + percent.toFixed(2) + "% )";
+
+        context.beginPath();
+        context.rect(...predictions[i].bbox);
+        context.lineWidth = 6;
+        context.strokeStyle = "white";
+        context.fillStyle = "white";
+        context.stroke();
+        context.fillText(
+          content,
+          predictions[i].bbox[0],
+          predictions[i].bbox[1] > 10 ? predictions[i].bbox[1] - 5 : 10
+        );
+        const params = {
+          content: content,
+          position: {
+            x: predictions[i].bbox[0] / c.width,
+            y: predictions[i].bbox[1] / c.height,
+          },
+          color: "deep_purple",
+        };
+
+        const note = await CreateNote(data.pid, data.screenId, params);
+        console.log(note);
+      }
+    }
+  };
   return (
     <>
       {data === undefined && (
@@ -73,7 +100,9 @@ const Detection = ({ model, data, options }) => {
             src={data.imageUrl}
             width={data.imgWidth}
             height={data.imgHeight}
-            onLoad={()=>{run()}}
+            onLoad={() => {
+              run();
+            }}
             alt=""
             id="preview"
             crossOrigin="anonymous"

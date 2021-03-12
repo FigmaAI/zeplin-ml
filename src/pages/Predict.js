@@ -32,17 +32,20 @@ export default function Predict(props) {
     e.preventDefault();
     history.replace("/create");
   };
-  const loadedModel = "";
+  
   const loadModel = async () => {
-    const options = { score: 0.66, iou: 0.5, topk: 20 };
-    const loadedModel = await automl.loadObjectDetection(
-      "/models/" +
-        query.model +
-        "/model.json"
-      // "https://storage.googleapis.com/tfjs-testing/tfjs-automl/object_detection/model.json"
-    );
-    setModel(loadedModel);
-    setOptions(options);
+    if (query.model === "mobilenet_v1" || query.model === "mobilenet_v2") {
+      const loadedModel = await cocoSsd.load({ base: query.model });
+      setModel(loadedModel);
+    } else {
+      const options = { score: 0.5, iou: 0.5, topk: 20 };
+      const loadedModel = await automl.loadObjectDetection(
+        // "/models/" + query.model + "/model.json"
+        "https://storage.googleapis.com/tfjs-testing/tfjs-automl/object_detection/model.json"
+      );
+      setModel(loadedModel);
+      setOptions(options);
+    }
   };
 
   const onFetch = async () => {

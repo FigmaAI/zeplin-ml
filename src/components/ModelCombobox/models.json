@@ -1,6 +1,14 @@
 [
   {
-    "name": "500 Dataset",
-    "value": "ui-dataset"
+    "name": "MobileNet V1",
+    "value": "mobilenet_v1"
+  },
+  {
+    "name": "MobileNet V2",
+    "value": "mobilenet_v2"
+  },
+  {
+    "name": "Salad Dataset",
+    "value": "bject_detection"
   }
 ]
