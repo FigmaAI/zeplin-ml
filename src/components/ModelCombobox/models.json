@@ -8,7 +8,7 @@
     "value": "mobilenet_v2"
   },
   {
-    "name": "Salad Dataset",
-    "value": "bject_detection"
+    "name": "500 Dataset",
+    "value": "web_model"
   }
 ]

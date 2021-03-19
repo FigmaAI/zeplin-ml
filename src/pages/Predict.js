@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import * as tf from "@tensorflow/tfjs";
-// import "@tensorflow/tfjs-backend-webgl";
+import "@tensorflow/tfjs-backend-webgl";
 import * as automl from "@tensorflow/tfjs-automl";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
@@ -28,23 +28,43 @@ export default function Predict(props) {
 
   const history = useHistory();
   const query = queryString.parse(history.location.search);
+
   const onBack = (e) => {
     e.preventDefault();
     history.replace("/create");
   };
-  
   const loadModel = async () => {
     if (query.model === "mobilenet_v1" || query.model === "mobilenet_v2") {
       const loadedModel = await cocoSsd.load({ base: query.model });
       setModel(loadedModel);
     } else {
-      const options = { score: 0.5, iou: 0.5, topk: 20 };
-      const loadedModel = await automl.loadObjectDetection(
-        // "/models/" + query.model + "/model.json"
-        "https://storage.googleapis.com/tfjs-testing/tfjs-automl/object_detection/model.json"
+      const loadedModel = await tf.loadGraphModel(
+        "/models/" + query.model + "/model.json"
       );
+
+      const options = {
+        1: "Buttons",
+        2: "Checkboxes",
+        3: "FAB -Floating Action Button-",
+        4: "Page Controls",
+        5: "Pickers",
+        6: "Progress indicators",
+        7: "Radio buttons",
+        8: "Rating",
+        9: "Sliders",
+        10: "Steppers",
+        11: "Switches",
+        12: "Text Fields",
+      };
+
+      // // AutoML의 경우 이것을 사용한다.
+      // const options = { score: 0.5, iou: 0.5, topk: 20 };
+      // const loadedModel = await automl.loadObjectDetection(
+      // "/models/" + query.model + "/model.json"
+      // "https://storage.googleapis.com/tfjs-testing/tfjs-automl/object_detection/model.json"
+      // );
+      setOptions(options); // SSD와 구분하는 용도로 사용
       setModel(loadedModel);
-      setOptions(options);
     }
   };
 

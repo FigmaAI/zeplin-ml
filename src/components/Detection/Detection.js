@@ -1,5 +1,19 @@
 import React, { Fragment } from "react";
+import * as tf from "@tensorflow/tfjs";
 import { CreateNote } from "../../services/zeplin";
+
+const loadImage = (pixels, input_size) => {
+  console.log("Pre-processing image...");
+
+  // Pre-process the image
+  let image = tf.browser.fromPixels(pixels, 3);
+  image = tf.image.resizeBilinear(image.expandDims().toFloat(), [
+    input_size,
+    input_size,
+  ]);
+
+  return image;
+};
 
 const Detection = ({ model, data, options }) => {
   const run = async () => {
@@ -15,40 +29,43 @@ const Detection = ({ model, data, options }) => {
     context.font = "16px Arial";
 
     if (options !== null) {
-      const predictions = await model.detect(preview, options);
+      const input_size = model.inputs[0].shape[1];
+      const predictions = await model.executeAsync(
+        loadImage(preview, input_size)
+      );
       console.log(predictions);
       console.log("number of detections: ", predictions.length);
-      const context = c.getContext("2d");
+      // const context = c.getContext("2d");
 
-      if (predictions.length !== null) {
-        for (let i = 0; i < predictions.length; i++) {
-          const { box, label, score } = predictions[i];
-          const { left, top, width, height } = box;
-          const bbox = [left, top, width, height];
+      // if (predictions.length !== null) {
+      //   for (let i = 0; i < predictions.length; i++) {
+      //     const { box, label, score } = predictions[i];
+      //     const { left, top, width, height } = box;
+      //     const bbox = [left, top, width, height];
 
-          const percent = score * 100;
-          const content = label + " ( " + percent.toFixed(2) + "% )";
-          context.beginPath();
-          context.rect(...bbox);
-          context.lineWidth = 6;
-          context.strokeStyle = "white";
-          context.fillStyle = "white";
-          context.stroke();
-          context.fillText(content, left, top > 10 ? top - 5 : 10);
+      //     const percent = score * 100;
+      //     const content = label + " ( " + percent.toFixed(2) + "% )";
+      //     context.beginPath();
+      //     context.rect(...bbox);
+      //     context.lineWidth = 6;
+      //     context.strokeStyle = "white";
+      //     context.fillStyle = "white";
+      //     context.stroke();
+      //     context.fillText(content, left, top > 10 ? top - 5 : 10);
 
-          const params = {
-            content: content,
-            position: {
-              x: left / c.width,
-              y: top / c.height,
-            },
-            color: "peach",
-          };
+      //     const params = {
+      //       content: content,
+      //       position: {
+      //         x: left / c.width,
+      //         y: top / c.height,
+      //       },
+      //       color: "peach",
+      //     };
 
-          const note = await CreateNote(data.pid, data.screenId, params);
-          console.log(note);
-        }
-      }
+      // const note = await CreateNote(data.pid, data.screenId, params);
+      // console.log(note);
+      // }
+      // }
     } else {
       const predictions = await model.detect(preview);
       console.log(predictions);
@@ -79,8 +96,8 @@ const Detection = ({ model, data, options }) => {
           color: "deep_purple",
         };
 
-        const note = await CreateNote(data.pid, data.screenId, params);
-        console.log(note);
+        // const note = await CreateNote(data.pid, data.screenId, params);
+        // console.log(note);
       }
     }
   };
