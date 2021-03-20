@@ -1,14 +1,10 @@
 [
   {
-    "name": "MobileNet V1",
-    "value": "mobilenet_v1"
+    "name": "SSD MobileNet V2",
+    "value": "ui-dataset"
   },
   {
-    "name": "MobileNet V2",
-    "value": "mobilenet_v2"
-  },
-  {
-    "name": "500 Dataset",
+    "name": "EfficientDet D0",
     "value": "web_model"
   }
 ]

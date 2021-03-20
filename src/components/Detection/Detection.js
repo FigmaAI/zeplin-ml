@@ -2,103 +2,125 @@ import React, { Fragment } from "react";
 import * as tf from "@tensorflow/tfjs";
 import { CreateNote } from "../../services/zeplin";
 
-const loadImage = (pixels, input_size) => {
+const loadImage = (frame) => {
   console.log("Pre-processing image...");
+  const tfimg = tf.browser.fromPixels(frame).toInt();
+  const expandedimg = tfimg.expandDims();
+  return expandedimg;
+};
 
-  // Pre-process the image
-  let image = tf.browser.fromPixels(pixels, 3);
-  image = tf.image.resizeBilinear(image.expandDims().toFloat(), [
-    input_size,
-    input_size,
-  ]);
+const predictUI = async (inputs, model) => {
+  console.log("Running predictions...");
+  const predictions = await model.executeAsync(inputs);
+  return predictions;
+};
 
-  return image;
+const renderPredictions = (predictions, width, height, classesDir) => {
+  console.log("Highlighting results...");
+
+  //Getting predictions
+  const boxes = predictions[4].arraySync();
+  const scores = predictions[5].arraySync();
+  const classes = predictions[6].dataSync();
+
+  const detectionObjects = [];
+
+  scores[0].forEach((score, i) => {
+    if (score > 0.5) {
+      const bbox = [];
+      const minY = boxes[0][i][0] * height;
+      const minX = boxes[0][i][1] * width;
+      const maxY = boxes[0][i][2] * height;
+      const maxX = boxes[0][i][3] * width;
+      bbox[0] = minX;
+      bbox[1] = minY;
+      bbox[2] = maxX - minX;
+      bbox[3] = maxY - minY;
+      detectionObjects.push({
+        class: classes[i],
+        label: classesDir[classes[i]].name,
+        score: score.toFixed(4),
+        bbox: bbox,
+      });
+    }
+  });
+
+  return detectionObjects;
 };
 
 const Detection = ({ model, data, options }) => {
   const run = async () => {
-    console.log(data);
-    const preview = document.getElementById("preview");
+    try {
+      const image = document.getElementById("preview");
 
-    // canvas 그리기
-    const c = document.getElementById("canvas");
-    c.width = data.imgWidth;
-    c.height = data.imgHeight;
-    const context = c.getContext("2d");
-    context.drawImage(preview, 0, 0);
-    context.font = "16px Arial";
+      // Draw canvas
+      const c = document.getElementById("canvas");
+      c.width = data.imgWidth;
+      c.height = data.imgHeight;
+      const context = c.getContext("2d");
+      context.drawImage(image, 0, 0);
 
-    if (options !== null) {
-      const input_size = model.inputs[0].shape[1];
-      const predictions = await model.executeAsync(
-        loadImage(preview, input_size)
+      // Font options.
+      const font = "16px sans-serif";
+      context.font = font;
+      context.textBaseline = "top";
+
+      const expandedimg = loadImage(image);
+      const predictions = await predictUI(expandedimg, model);
+      const detections = renderPredictions(
+        predictions,
+        data.imgWidth,
+        data.imgHeight,
+        options
       );
-      console.log(predictions);
-      console.log("number of detections: ", predictions.length);
-      // const context = c.getContext("2d");
 
-      // if (predictions.length !== null) {
-      //   for (let i = 0; i < predictions.length; i++) {
-      //     const { box, label, score } = predictions[i];
-      //     const { left, top, width, height } = box;
-      //     const bbox = [left, top, width, height];
+      console.log(detections);
 
-      //     const percent = score * 100;
-      //     const content = label + " ( " + percent.toFixed(2) + "% )";
-      //     context.beginPath();
-      //     context.rect(...bbox);
-      //     context.lineWidth = 6;
-      //     context.strokeStyle = "white";
-      //     context.fillStyle = "white";
-      //     context.stroke();
-      //     context.fillText(content, left, top > 10 ? top - 5 : 10);
+      detections.forEach((item) => {
+        const x = item["bbox"][0];
+        const y = item["bbox"][1];
+        const width = item["bbox"][2];
+        const height = item["bbox"][3];
 
-      //     const params = {
-      //       content: content,
-      //       position: {
-      //         x: left / c.width,
-      //         y: top / c.height,
-      //       },
-      //       color: "peach",
-      //     };
+        // Draw the bounding box.
+        context.strokeStyle = "#00FFFF";
+        context.lineWidth = 4;
+        context.strokeRect(x, y, width, height);
 
-      // const note = await CreateNote(data.pid, data.screenId, params);
-      // console.log(note);
-      // }
-      // }
-    } else {
-      const predictions = await model.detect(preview);
-      console.log(predictions);
-      console.log("number of detections: ", predictions.length);
+        // Draw the label background.
+        context.fillStyle = "#00FFFF";
+        const textWidth = context.measureText(
+          item["label"] + " " + (100 * item["score"]).toFixed(2) + "%"
+        ).width;
+        const textHeight = parseInt(font, 10); // base 10
+        context.fillRect(x, y, textWidth + 4, textHeight + 4);
+      });
 
-      for (let i = 0; i < predictions.length; i++) {
-        const percent = predictions[i].score * 100;
+      for (let i = 0; i < detections.length; i++) {
+        const item = detections[i];
+        const x = item["bbox"][0];
+        const y = item["bbox"][1];
         const content =
-          predictions[i].class + " ( " + percent.toFixed(2) + "% )";
+          item["label"] + " " + (100 * item["score"]).toFixed(2) + "%";
 
-        context.beginPath();
-        context.rect(...predictions[i].bbox);
-        context.lineWidth = 6;
-        context.strokeStyle = "white";
-        context.fillStyle = "white";
-        context.stroke();
-        context.fillText(
-          content,
-          predictions[i].bbox[0],
-          predictions[i].bbox[1] > 10 ? predictions[i].bbox[1] - 5 : 10
-        );
+        // Draw the text last to ensure it's on top.
+        context.fillStyle = "#000000";
+        context.fillText(content, x, y);
+        console.log("detected: ", item);
+
+        const zeplinX = x / data.imgWidth;
+        const zeplinY = y / data.imgHeight;
         const params = {
           content: content,
-          position: {
-            x: predictions[i].bbox[0] / c.width,
-            y: predictions[i].bbox[1] / c.height,
-          },
-          color: "deep_purple",
+          position: { x: zeplinX, y: zeplinY },
+          color: "peach",
         };
 
-        // const note = await CreateNote(data.pid, data.screenId, params);
-        // console.log(note);
+        const note = await CreateNote(data.pid, data.screenId, params);
+        console.log(note);
       }
+    } catch (e) {
+      console.log(e.message);
     }
   };
   return (
