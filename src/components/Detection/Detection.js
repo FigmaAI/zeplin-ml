@@ -19,14 +19,13 @@ const renderPredictions = (predictions, width, height, classesDir) => {
   console.log("Highlighting results...");
 
   //Getting predictions
-  const boxes = predictions[4].arraySync();
-  const scores = predictions[5].arraySync();
-  const classes = predictions[6].dataSync();
-
+  const boxes = predictions[0].arraySync();
+  const scores = predictions[4].arraySync();
+  const classes = predictions[2].dataSync();
   const detectionObjects = [];
 
   scores[0].forEach((score, i) => {
-    if (score > 0.5) {
+    if (score > 0.3) {
       const bbox = [];
       const minY = boxes[0][i][0] * height;
       const minX = boxes[0][i][1] * width;
@@ -36,11 +35,12 @@ const renderPredictions = (predictions, width, height, classesDir) => {
       bbox[1] = minY;
       bbox[2] = maxX - minX;
       bbox[3] = maxY - minY;
+
       detectionObjects.push({
         class: classes[i],
         label: classesDir[classes[i]].name,
         score: score.toFixed(4),
-        bbox: bbox,
+        bbox: bbox
       });
     }
   });
@@ -48,7 +48,7 @@ const renderPredictions = (predictions, width, height, classesDir) => {
   return detectionObjects;
 };
 
-const Detection = ({ model, data, options }) => {
+const Detection = ({ model, data, classesDir }) => {
   const run = async () => {
     try {
       const image = document.getElementById("preview");
@@ -71,7 +71,7 @@ const Detection = ({ model, data, options }) => {
         predictions,
         data.imgWidth,
         data.imgHeight,
-        options
+        classesDir
       );
 
       console.log(detections);
@@ -127,10 +127,10 @@ const Detection = ({ model, data, options }) => {
     <>
       {data === undefined && (
         <img
-          src="http://placehold.it/500x400"
+          src="http://placehold.it/640x640"
           alt=""
-          width="500"
-          height="400"
+          width="640"
+          height="640"
         />
       )}
       {data !== undefined && (

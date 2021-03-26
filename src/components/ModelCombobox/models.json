@@ -1,10 +1,10 @@
 [
   {
-    "name": "SSD MobileNet V2",
+    "name": "GCP AutoML",
     "value": "ui-dataset"
   },
   {
-    "name": "EfficientDet D0",
+    "name": "SSD MobileNet V2(*)",
     "value": "web_model"
   }
 ]

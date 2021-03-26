@@ -17,7 +17,7 @@ export default function Predict(props) {
   const [round, setRound] = useState(null);
   const [selectedData, setSelectedData] = useState(null);
   const [totalLength, setTotalLength] = useState(null);
-  const [options, setOptions] = useState(null);
+  const [classesDir, setClassesDir] = useState(null);
 
   const history = useHistory();
   const query = queryString.parse(history.location.search);
@@ -33,7 +33,7 @@ export default function Predict(props) {
       // "https://raw.githubusercontent.com/hugozanini/TFJS-object-detection/master/models/kangaroo-detector/model.json"
     );
 
-    let options = {
+    let classesDir = {
       1: { name: "Buttons", id: 1 },
       2: { name: "Checkboxes", id: 2 },
       3: { name: "FAB -Floating Action Button-", id: 3 },
@@ -48,7 +48,7 @@ export default function Predict(props) {
       12: { name: "Text Fields", id: 12 },
     };
 
-    setOptions(options);
+    setClassesDir(classesDir);
     setModel(loadedModel);
   };
 
@@ -106,7 +106,7 @@ export default function Predict(props) {
               {round + 1} / {totalLength + 1}
             </Button>
           </Box>
-          <Detection data={selectedData} model={model} options={options} />
+          <Detection data={selectedData} model={model} classesDir={classesDir} />
         </>
       )}
 
