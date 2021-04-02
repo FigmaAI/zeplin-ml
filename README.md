@@ -16,6 +16,11 @@
 
 This project uses [Zeplin API](https://docs.zeplin.dev) to fetch Zeplin projects and screens and [Object Detection API](https://github.com/tensorflow/tfjs-models/tree/master/coco-ssd) of [Tenserflow](https://github.com/tensorflow/tfjs) to detect UI objects in Zeplin screen.
 
+**Demo (Youtube)**
+
+[![Demo](http://img.youtube.com/vi/a3jANIGk5EA/0.jpg)](https://youtu.be/a3jANIGk5EA) 
+
+
 ### Quick start
 
 **Prepare `.env`**
