@@ -3,7 +3,7 @@ import { Grid, Box, Typography, CircularProgress } from "@material-ui/core";
 
 const Loader = ({ text }) => (
   <Fragment>
-    <Grid container justify="center" alignItems="center">
+    <Grid container justifyContent="center" alignItems="center">
       <CircularProgress />
       <Box padding={4}>
         <Typography component="h1" variant="h6">

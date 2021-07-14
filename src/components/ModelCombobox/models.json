@@ -1,10 +1,6 @@
 [
   {
-    "name": "GCP AutoML",
-    "value": "ui-dataset"
-  },
-  {
-    "name": "SSD MobileNet V2(*)",
-    "value": "web_model"
+    "name": "RICO Dataset",
+    "value": "RICO"
   }
 ]

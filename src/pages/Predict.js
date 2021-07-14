@@ -30,22 +30,109 @@ export default function Predict(props) {
   const loadModel = async () => {
     const loadedModel = await tf.loadGraphModel(
       "/models/" + query.model + "/model.json"
-      // "https://raw.githubusercontent.com/hugozanini/TFJS-object-detection/master/models/kangaroo-detector/model.json"
     );
 
     let classesDir = {
-      1: { name: "Buttons", id: 1 },
-      2: { name: "Checkboxes", id: 2 },
-      3: { name: "FAB -Floating Action Button-", id: 3 },
-      4: { name: "Page Controls", id: 4 },
-      5: { name: "Pickers", id: 5 },
-      6: { name: "Progress indicators", id: 6 },
-      7: { name: "Radio buttons", id: 7 },
-      8: { name: "Rating", id: 8 },
-      9: { name: "Sliders", id: 9 },
-      10: { name: "Steppers", id: 10 },
-      11: { name: "Switches", id: 11 },
-      12: { name: "Text Fields", id: 12 },
+      1: {
+        name: "Text",
+        id: 1,
+      },
+      2: {
+        name: "Image",
+        id: 2,
+      },
+      3: {
+        name: "Icon",
+        id: 3,
+      },
+      4: {
+        name: "List Item",
+        id: 4,
+      },
+      5: {
+        name: "Text Button",
+        id: 5,
+      },
+      6: {
+        name: "Toolbar",
+        id: 6,
+      },
+      7: {
+        name: "Web View",
+        id: 7,
+      },
+      8: {
+        name: "Input",
+        id: 8,
+      },
+      9: {
+        name: "Card",
+        id: 9,
+      },
+      10: {
+        name: "Advertisement",
+        id: 10,
+      },
+      11: {
+        name: "Background Image",
+        id: 11,
+      },
+      12: {
+        name: "Drawer",
+        id: 12,
+      },
+      13: {
+        name: "Radio Button",
+        id: 13,
+      },
+      14: {
+        name: "Checkbox",
+        id: 14,
+      },
+      15: {
+        name: "Multi-Tab",
+        id: 15,
+      },
+      16: {
+        name: "Pager Indicator",
+        id: 16,
+      },
+      17: {
+        name: "Modal",
+        id: 17,
+      },
+      18: {
+        name: "On/Off Switch",
+        id: 18,
+      },
+      19: {
+        name: "Slider",
+        id: 19,
+      },
+      20: {
+        name: "Map View",
+        id: 20,
+      },
+      21: {
+        name: "Button Bar",
+        id: 21,
+      },
+      22: {
+        name: "Video",
+        id: 22,
+      },
+      23: {
+        name: "Bottom Navigation",
+        id: 23,
+      },
+      24: {
+        name: "Number Stepper",
+        id: 24,
+      },
+      25: {
+        name: "Date Picker",
+        id: 25,
+      },
     };
 
     setClassesDir(classesDir);
@@ -106,7 +193,11 @@ export default function Predict(props) {
               {round + 1} / {totalLength + 1}
             </Button>
           </Box>
-          <Detection data={selectedData} model={model} classesDir={classesDir} />
+          <Detection
+            data={selectedData}
+            model={model}
+            classesDir={classesDir}
+          />
         </>
       )}
 

@@ -19,9 +19,9 @@ const renderPredictions = (predictions, width, height, classesDir) => {
   console.log("Highlighting results...");
 
   //Getting predictions
-  const boxes = predictions[0].arraySync();
-  const scores = predictions[4].arraySync();
-  const classes = predictions[2].dataSync();
+  const boxes = predictions[3].arraySync();
+  const scores = predictions[2].arraySync();
+  const classes = predictions[1].dataSync();
   const detectionObjects = [];
 
   scores[0].forEach((score, i) => {
@@ -40,7 +40,7 @@ const renderPredictions = (predictions, width, height, classesDir) => {
         class: classes[i],
         label: classesDir[classes[i]].name,
         score: score.toFixed(4),
-        bbox: bbox
+        bbox: bbox,
       });
     }
   });
@@ -73,8 +73,6 @@ const Detection = ({ model, data, classesDir }) => {
         data.imgHeight,
         classesDir
       );
-
-      console.log(detections);
 
       detections.forEach((item) => {
         const x = item["bbox"][0];
@@ -117,7 +115,7 @@ const Detection = ({ model, data, classesDir }) => {
         };
 
         const note = await CreateNote(data.pid, data.screenId, params);
-        console.log(note);
+        // console.log(note);
       }
     } catch (e) {
       console.log(e.message);
@@ -127,7 +125,7 @@ const Detection = ({ model, data, classesDir }) => {
     <>
       {data === undefined && (
         <img
-          src="http://placehold.it/640x640"
+          src="http://via.placeholder.com/640x640"
           alt=""
           width="640"
           height="640"
