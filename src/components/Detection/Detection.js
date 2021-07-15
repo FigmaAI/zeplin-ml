@@ -15,13 +15,18 @@ const predictUI = async (inputs, model) => {
   return predictions;
 };
 
-const renderPredictions = (predictions, width, height, classesDir) => {
+const getLabelByID = (classes, i) => {
+  let label = classes.filter((x) => x.id === i);
+  return label[0].name;
+};
+
+const renderPredictions = (predictions, width, height, classesDir, savedModelShow) => {
   console.log("Highlighting results...");
 
   //Getting predictions
-  const boxes = predictions[3].arraySync();
-  const scores = predictions[2].arraySync();
-  const classes = predictions[1].dataSync();
+  const boxes = predictions[savedModelShow.boxes].arraySync();
+  const scores = predictions[savedModelShow.scores].arraySync();
+  const classes = predictions[savedModelShow.classes].dataSync();
   const detectionObjects = [];
 
   scores[0].forEach((score, i) => {
@@ -38,7 +43,7 @@ const renderPredictions = (predictions, width, height, classesDir) => {
 
       detectionObjects.push({
         class: classes[i],
-        label: classesDir[classes[i]].name,
+        label: getLabelByID(classesDir, classes[i]),
         score: score.toFixed(4),
         bbox: bbox,
       });
@@ -48,7 +53,7 @@ const renderPredictions = (predictions, width, height, classesDir) => {
   return detectionObjects;
 };
 
-const Detection = ({ model, data, classesDir }) => {
+const Detection = ({ model, data, classesDir, savedModelShow }) => {
   const run = async () => {
     try {
       const image = document.getElementById("preview");
@@ -58,7 +63,7 @@ const Detection = ({ model, data, classesDir }) => {
       c.width = data.imgWidth;
       c.height = data.imgHeight;
       const context = c.getContext("2d");
-      context.drawImage(image, 0, 0);
+      context.drawImage(image, 0, 0, c.width, c.height );
 
       // Font options.
       const font = "16px sans-serif";
@@ -71,7 +76,8 @@ const Detection = ({ model, data, classesDir }) => {
         predictions,
         data.imgWidth,
         data.imgHeight,
-        classesDir
+        classesDir,
+        savedModelShow
       );
 
       detections.forEach((item) => {
@@ -114,7 +120,7 @@ const Detection = ({ model, data, classesDir }) => {
           color: "peach",
         };
 
-        const note = await CreateNote(data.pid, data.screenId, params);
+        // const note = await CreateNote(data.pid, data.screenId, params);
         // console.log(note);
       }
     } catch (e) {
@@ -125,14 +131,15 @@ const Detection = ({ model, data, classesDir }) => {
     <>
       {data === undefined && (
         <img
-          src="http://via.placeholder.com/640x640"
+          src="http://via.placeholder.com/560x560"
           alt=""
-          width="640"
-          height="640"
+          width="auto"
+          height="560"
         />
       )}
       {data !== undefined && (
         <Fragment>
+          <canvas id="canvas" />
           <img
             src={data.imageUrl}
             width={data.imgWidth}
@@ -145,7 +152,6 @@ const Detection = ({ model, data, classesDir }) => {
             crossOrigin="anonymous"
             border="1px"
           />
-          <canvas id="canvas" />
         </Fragment>
       )}
     </>
