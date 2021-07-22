@@ -143,7 +143,7 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
         <Fragment>
           <canvas id="canvas" />
           <img
-            src={data.imageUrl}
+            src={'https://public-cdn.zeplin.dev' + data.imageUrl}
             width={data.imgWidth}
             height={data.imgHeight}
             onLoad={() => {
