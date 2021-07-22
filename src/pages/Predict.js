@@ -34,9 +34,9 @@ export default function Predict(props) {
       classes: "1",
     },
     MOBBIN: {
-      boxes: "1",
-      scores: "4",
-      classes: "2",
+      boxes: "6",
+      scores: "0",
+      classes: "1",
     },
   };
 

@@ -17,7 +17,6 @@ const predictUI = async (inputs, model) => {
 
 const getLabelByID = (classes, i) => {
   let label = classes.filter((x) => x.id === i);
-  console.log(label);
   return label[0].name;
 };
 
@@ -80,6 +79,8 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
         classesDir,
         savedModelShow
       );
+
+      console.log("detected: ", detections);
 
       detections.forEach((item) => {
         const x = item["bbox"][0];
