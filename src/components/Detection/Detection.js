@@ -17,6 +17,7 @@ const predictUI = async (inputs, model) => {
 
 const getLabelByID = (classes, i) => {
   let label = classes.filter((x) => x.id === i);
+  console.log(label);
   return label[0].name;
 };
 
@@ -120,8 +121,8 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
           color: "peach",
         };
 
-        // const note = await CreateNote(data.pid, data.screenId, params);
-        // console.log(note);
+        const note = await CreateNote(data.pid, data.screenId, params);
+        console.log(note);
       }
     } catch (e) {
       console.log(e.message);
