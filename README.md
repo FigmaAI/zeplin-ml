@@ -1,6 +1,6 @@
 <p align="center">
   <a href="#">
-    <img alt="Zeplin Slides" src="/logo.png" width="256" />
+    <img alt="Zeplin ML" src="/logo.png" width="256" />
   </a>
 </p>
 <h1 align="center">
