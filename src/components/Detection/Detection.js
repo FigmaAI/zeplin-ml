@@ -1,6 +1,23 @@
 import React, { Fragment } from "react";
 import * as tf from "@tensorflow/tfjs";
-import { CreateNote } from "../../services/zeplin";
+import {
+  CreateNote,
+  fetchLayersFromScreenVersions,
+  ExtractComponents,
+} from "../../services/zeplin";
+import { Button, Box, Paper, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+  },
+  color: theme.palette.text.secondary,
+}));
 
 const loadImage = (frame) => {
   console.log("Pre-processing image...");
@@ -20,7 +37,59 @@ const getLabelByID = (classes, i) => {
   return label[0].name;
 };
 
-const renderPredictions = (predictions, width, height, classesDir, savedModelShow) => {
+const renderComponents = async (data) => {
+  console.log("Getting components from Zeplin");
+
+  // Get raw JSON and extract Component_name
+  const raw = await fetchLayersFromScreenVersions(data.pid, data.screenId);
+  const layers = ExtractComponents(raw);
+  console.log("Zeplin Components: ", layers);
+
+  const image = document.getElementById("preview");
+
+  // Draw canvas
+  const c = document.getElementById("components");
+  c.width = data.imgWidth;
+  c.height = data.imgHeight;
+  const context = c.getContext("2d");
+  context.drawImage(image, 0, 0, c.width, c.height);
+
+  // Font options.
+  const font = "12px sans-serif";
+  context.font = font;
+  context.textBaseline = "top";
+
+  layers.forEach((layer) => {
+    const x = layer.RECT.x;
+    const y = layer.RECT.y;
+    const width = layer.RECT.width;
+    const height = layer.RECT.height;
+    const label = layer.COMPONENT_NAME;
+
+    // Draw the bounding box.
+    context.strokeStyle = "#FFA500";
+    context.lineWidth = 4;
+    context.strokeRect(x, y, width, height);
+
+    // Draw the label background.
+    context.fillStyle = "#FFA500";
+    const textWidth = context.measureText(label).width;
+    const textHeight = parseInt(font, 10); // base 10
+    context.fillRect(x, y, textWidth + 4, textHeight + 4);
+
+    // Draw the text last to ensure it's on top.
+    context.fillStyle = "#000000";
+    context.fillText(label, x, y);
+  });
+};
+
+const renderPredictions = (
+  predictions,
+  width,
+  height,
+  classesDir,
+  savedModelShow
+) => {
   console.log("Highlighting results...");
 
   //Getting predictions
@@ -59,11 +128,11 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
       const image = document.getElementById("preview");
 
       // Draw canvas
-      const c = document.getElementById("canvas");
+      const c = document.getElementById("predictions");
       c.width = data.imgWidth;
       c.height = data.imgHeight;
       const context = c.getContext("2d");
-      context.drawImage(image, 0, 0, c.width, c.height );
+      context.drawImage(image, 0, 0, c.width, c.height);
 
       // Font options.
       const font = "16px sans-serif";
@@ -114,46 +183,89 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
         context.fillText(content, x, y);
         console.log("detected: ", item);
 
-        const zeplinX = x / data.imgWidth;
-        const zeplinY = y / data.imgHeight;
-        const params = {
-          content: content,
-          position: { x: zeplinX, y: zeplinY },
-          color: "peach",
-        };
+        // const zeplinX = x / data.imgWidth;
+        // const zeplinY = y / data.imgHeight;
+        // const params = {
+        //   content: content,
+        //   position: { x: zeplinX, y: zeplinY },
+        //   color: "peach",
+        // };
 
-        const note = await CreateNote(data.pid, data.screenId, params);
-        console.log(note);
+        // const note = await CreateNote(data.pid, data.screenId, params);
+        // console.log(note);
       }
     } catch (e) {
       console.log(e.message);
     }
   };
+  const classes = useStyles();
   return (
     <>
       {data === undefined && (
-        <img
-          src="http://via.placeholder.com/560x560"
-          alt=""
-          width="auto"
-          height="560"
-        />
+        <Box marginTop={4}>
+          <Paper className={classes.paper} variant="outlined">
+            <Box padding={4}>
+              <img src="http://via.placeholder.com/360x640" alt="" />
+            </Box>
+          </Paper>
+        </Box>
       )}
       {data !== undefined && (
         <Fragment>
-          <canvas id="canvas" />
-          <img
-            src={'https://public-cdn.zeplin.dev' + data.imageUrl}
-            width={data.imgWidth}
-            height={data.imgHeight}
-            onLoad={() => {
-              run();
-            }}
-            alt=""
-            id="preview"
-            crossOrigin="anonymous"
-            border="1px"
-          />
+          <Box marginTop={4}>
+            <Paper className={classes.paper} variant="outlined">
+              <Box padding={4}>
+                <Typography component="h1" variant="h6">
+                  Original Screen
+                </Typography>
+                <img
+                  src={data.imageUrl}
+                  width={data.imgWidth}
+                  height={data.imgHeight}
+                  onLoad={() => {
+                    run();
+                  }}
+                  alt=""
+                  id="preview"
+                  crossOrigin="anonymous"
+                  border="1px"
+                />
+              </Box>
+            </Paper>
+          </Box>
+          <Box marginTop={4}>
+            <Paper className={classes.paper} variant="outlined">
+              <Box padding={4}>
+                <Typography component="h1" variant="h6">
+                  TensorFlow Detections
+                </Typography>
+                <canvas id="predictions" border="1px" />
+              </Box>
+            </Paper>
+          </Box>
+
+          <Box marginTop={4}>
+            <Paper className={classes.paper} variant="outlined">
+              <Box padding={4}>
+                <Typography component="h1" variant="h6">
+                  Design System usage
+                </Typography>
+                <canvas id="components" border="1px" />
+                <Box padding={4}>
+                  <Button
+                    onClick={() => renderComponents(data)}
+                    size="large"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    disableElevation
+                  >
+                    Compare to...
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
         </Fragment>
       )}
     </>

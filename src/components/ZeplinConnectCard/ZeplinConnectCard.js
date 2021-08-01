@@ -28,7 +28,7 @@ function ZeplinConnectCard() {
 
         if (access_token) {
           connectZeplin(access_token);
-
+          console.log(access_token);
           setAuthenticating(false);
 
           history.replace("/");

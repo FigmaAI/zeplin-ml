@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 import ArrowBack from "@material-ui/icons/ArrowBack";
-import { Box, Link, Button } from "@material-ui/core";
+import { Box, Link, Button, Paper, Typography } from "@material-ui/core";
 
 import Main from "../layouts/Main";
 import { fetchProjectScreensGroupedBySection } from "../services/zeplin";
 import Loader from "../components/Loader";
 import Detection from "../components/Detection";
 import * as tf from "@tensorflow/tfjs";
+
 tf.setBackend("webgl");
 
 export default function Predict(props) {
@@ -40,6 +41,14 @@ export default function Predict(props) {
     },
   };
 
+  const imageReplacer = (screen) => {
+    const image =
+      process.env.NODE_ENV === "development"
+        ? screen.replace("https://public-cdn.zeplin.dev/", "/")
+        : screen;
+
+    return image;
+  };
   const loadModel = async () => {
     const loadedModel = await tf.loadGraphModel(
       "/models/" + query.model + "/model.json"
@@ -57,12 +66,7 @@ export default function Predict(props) {
     let data = [];
     sections.map((section, index) => {
       section.screens.map((screen, index) => {
-        const origin_img = screen.image.original_url;
-        const imgProxy = origin_img.replace(
-          "https://public-cdn.zeplin.dev/",
-          "/"
-        );
-
+        const imgProxy = imageReplacer(screen.image.original_url);
         const img = {
           pid: query.pid,
           screenId: screen.id,
@@ -93,27 +97,44 @@ export default function Predict(props) {
 
   return (
     <Main>
-      {model === null && <Loader text="Loading the model" />}
+      {model === null && (
+        <Box marginBottom={4}>
+          <Paper variant="outlined">
+            <Loader text="Loading the model" />
+          </Paper>
+        </Box>
+      )}
       {model !== null && selectedData !== null && (
         <>
-          <Box marginBottom={2}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={onIncrease}
-              fullWidth
-            >
-              {round} / {totalLength}
-            </Button>
+          <Box marginBottom={4}>
+            <Paper variant="outlined">
+              <Box padding={4}>
+                <Box marginBottom={2}>
+                  <Typography component="h1" variant="h6">
+                    Let's predict screens
+                  </Typography>
+
+                  <Box marginTop={2}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={onIncrease}
+                      fullWidth
+                    >
+                      {round} / {totalLength}
+                    </Button>
+                  </Box>
+                </Box>
+              </Box>
+            </Paper>
           </Box>
-          <div>
-            <Detection
-              data={selectedData}
-              model={model}
-              classesDir={classesDir}
-              savedModelShow={savedModelShow[query.model]}
-            />
-          </div>
+
+          <Detection
+            data={selectedData}
+            model={model}
+            classesDir={classesDir}
+            savedModelShow={savedModelShow[query.model]}
+          />
         </>
       )}
 
