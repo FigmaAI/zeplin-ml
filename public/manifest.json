@@ -1,6 +1,6 @@
 {
-  "short_name": "Zeplin Google Slides",
-  "name": "Create presentations in Google Slides from Zeplin projects",
+  "short_name": "Zeplin ML",
+  "name": "Detect UI components from screens autometically with TensorFlow JS.",
   "icons": [
     {
       "src": "favicon.ico",
