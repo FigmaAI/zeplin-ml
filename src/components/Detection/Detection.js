@@ -60,8 +60,8 @@ const renderComponents = async (data) => {
   context.textBaseline = "top";
 
   layers.forEach((layer) => {
-    const x = layer.RECT.x;
-    const y = layer.RECT.y;
+    const x = layer.RECT.absolute.x;
+    const y = layer.RECT.absolute.y;
     const width = layer.RECT.width;
     const height = layer.RECT.height;
     const label = layer.COMPONENT_NAME;
