@@ -4,10 +4,10 @@ import {
   CreateNote,
   fetchLayersFromScreenVersions,
   ExtractComponents,
+  matchBoxes,
 } from "../../services/zeplin";
-import { Button, Box, Paper, Typography } from "@material-ui/core";
+import { Button, Box, Paper, Typography, ButtonGroup } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import {} from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,18 +38,84 @@ const getLabelByID = (classes, i) => {
   return label[0].name;
 };
 
-const renderComponents = async (data) => {
+const compareTo = (imgWidth, imgHeight, boxes1, boxes2) => {
+  console.log("Comparing designs and predictions...");
+
+  try {
+    // Matched designs and predictions
+    const matched = matchBoxes(boxes1, boxes2);
+    console.log("matched: ", matched);
+
+    const image = document.getElementById("preview");
+    // Draw canvas
+    const c = document.getElementById("predictions");
+    c.width = imgWidth;
+    c.height = imgHeight;
+    const context = c.getContext("2d");
+    context.drawImage(image, 0, 0, c.width, c.height);
+    // Font options.
+    const font = "12px sans-serif";
+    context.font = font;
+    context.textBaseline = "top";
+
+    matched.forEach((match) => {
+      const iou = match.iou;
+      const x = match.design.bbox[0];
+      const y = match.design.bbox[1];
+      const width = match.design.bbox[2];
+      const height = match.design.bbox[3];
+      const label = match.design.label;
+
+      // if IoU < 0.5, draw Red box, other would be drawn skyblue
+
+      if (iou < 0.5) {
+        context.strokeStyle = "#FF0000";
+        context.lineWidth = 4;
+        context.strokeRect(x, y, width, height);
+
+        // Draw the label background.
+        context.fillStyle = "#FF0000";
+        const textWidth = context.measureText(label).width;
+        const textHeight = parseInt(font, 10); // base 10
+        context.fillRect(x, y, textWidth + 4, textHeight + 4);
+
+        // Draw the text last to ensure it's on top.
+        context.fillStyle = "#000000";
+        context.fillText(label, x, y);
+      } else {
+        context.strokeStyle = "#00FFFF";
+        context.lineWidth = 1;
+        context.strokeRect(x, y, width, height);
+
+        // Draw the label background.
+        context.fillStyle = "#00FFFF";
+        const textWidth = context.measureText(label).width;
+        const textHeight = parseInt(font, 10); // base 10
+        context.fillRect(x, y, textWidth + 4, textHeight + 4);
+
+        // Draw the text last to ensure it's on top.
+        context.fillStyle = "#000000";
+        context.fillText(label, x, y);
+      }
+    });
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+
+const renderComponents = async (data, setLayer) => {
   console.log("Getting components from Zeplin");
   try {
     // Get raw JSON and extract Component_name
     const raw = await fetchLayersFromScreenVersions(data.pid, data.screenId);
     const layers = ExtractComponents(raw);
     console.log("Zeplin Components: ", layers);
+    setLayer(layers);
 
     const image = document.getElementById("preview");
 
     // Draw canvas
-    const c = document.getElementById("components");
+    const c = document.getElementById("predictions");
     c.width = data.imgWidth;
     c.height = data.imgHeight;
     const context = c.getContext("2d");
@@ -61,11 +127,11 @@ const renderComponents = async (data) => {
     context.textBaseline = "top";
 
     layers.forEach((layer) => {
-      const x = layer.RECT.absolute.x;
-      const y = layer.RECT.absolute.y;
-      const width = layer.RECT.width;
-      const height = layer.RECT.height;
-      const label = layer.COMPONENT_NAME;
+      const x = layer["bbox"][0];
+      const y = layer["bbox"][1];
+      const width = layer["bbox"][2];
+      const height = layer["bbox"][3];
+      const label = layer.label;
 
       // Draw the bounding box.
       context.strokeStyle = "#FFA500";
@@ -81,14 +147,6 @@ const renderComponents = async (data) => {
       // Draw the text last to ensure it's on top.
       context.fillStyle = "#000000";
       context.fillText(label, x, y);
-
-      // 컴포넌트에 있고, 검출에는 없는 경우 -> AI 검출 실패
-      // 컴포넌트에 있고, 검출에도 있는 경우 -> 베스트 케이스
-      // - 박스의 크기가 predictions의 박스와 비슷한 것 중에서 (0.5 ~ 2)
-      // - overrap-area가 70%이상 겹치고,
-      // - 라벨이 같거나 유사한 경우
-      // 컴포넌트에 없고, 검출에는 있는 경우 -> 검출 성공 및 디자이너에게 알림
-      // - 박스의 크기가
     });
   } catch (e) {
     console.log(e.message);
@@ -139,7 +197,8 @@ const runPrediction = async (
   model,
   classesDir,
   savedModelShow,
-  setLoading
+  setLoading,
+  setPrediction
 ) => {
   setLoading(true);
   try {
@@ -168,6 +227,7 @@ const runPrediction = async (
     );
 
     console.log("detected: ", detections);
+    setPrediction(detections);
     setLoading(false);
 
     detections.forEach((item) => {
@@ -220,7 +280,11 @@ const runPrediction = async (
 
 const Detection = ({ model, data, classesDir, savedModelShow }) => {
   const [loading, setLoading] = useState();
+  const [layer, setLayer] = useState();
+  const [prediction, setPrediction] = useState();
   const classes = useStyles();
+
+  const isReady = !!layer && !!prediction;
 
   return (
     <>
@@ -255,52 +319,45 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
           <Box marginTop={4}>
             <Paper className={classes.paper} variant="outlined">
               <Box padding={4}>
-                <Typography component="h1" variant="h6">
-                  TensorFlow Detections
-                </Typography>
-                <canvas id="predictions" border="1px" />
                 <Box padding={4}>
-                  <Button
-                    onClick={() => {
-                      runPrediction(
-                        data,
-                        model,
-                        classesDir,
-                        savedModelShow,
-                        setLoading
-                      );
-                    }}
-                    size="large"
-                    variant="contained"
+                  <ButtonGroup
                     color="primary"
-                    fullWidth
-                    disabled={loading}
+                    aria-label="outlined primary button group"
                   >
-                    Get Predictions
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        runPrediction(
+                          data,
+                          model,
+                          classesDir,
+                          savedModelShow,
+                          setLoading,
+                          setPrediction
+                        );
+                      }}
+                      disabled={loading}
+                    >
+                      ❶ Get TFJS
+                    </Button>
+                    <Button onClick={() => renderComponents(data, setLayer)}>
+                      ❷ Get Zeplin
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        compareTo(
+                          data.imgWidth,
+                          data.imgHeight,
+                          prediction,
+                          layer
+                        )
+                      }
+                      disabled={!isReady}
+                    >
+                      ❸ Compare
+                    </Button>
+                  </ButtonGroup>
                 </Box>
-              </Box>
-            </Paper>
-          </Box>
-
-          <Box marginTop={4}>
-            <Paper className={classes.paper} variant="outlined">
-              <Box padding={4}>
-                <Typography component="h1" variant="h6">
-                  Design System usage
-                </Typography>
-                <canvas id="components" border="1px" />
-                <Box padding={4}>
-                  <Button
-                    onClick={() => renderComponents(data)}
-                    size="large"
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                  >
-                    Get Components
-                  </Button>
-                </Box>
+                <canvas id="predictions" />
               </Box>
             </Paper>
           </Box>
