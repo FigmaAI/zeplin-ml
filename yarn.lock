@@ -10431,6 +10431,11 @@ strict-uri-encode@^2.0.0:
   resolved "https://registry.yarnpkg.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
   integrity sha1-ucczDHBChi9rFC3CdLvMWGbONUY=
 
+string-comparison@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/string-comparison/-/string-comparison-1.0.9.tgz#1435c7d5553a76fc6ae12995fe8f3cf724bb8a54"
+  integrity sha512-phzXndkWdEmrFPR2o92MJeuw/fC0vSelpzCEE7mvc4z8Br1J65ZWKqOUNgUzGkq+9aAmOypePJwPGELgn9iUhA==
+
 string-length@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/string-length/-/string-length-2.0.0.tgz#d40dbb686a3ace960c1cffca562bf2c45f8363ed"
