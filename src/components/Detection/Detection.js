@@ -60,15 +60,31 @@ const compareTo = (imgWidth, imgHeight, boxes1, boxes2) => {
 
     matched.forEach((match) => {
       const iou = match.iou;
-      const x = match.design.bbox[0];
-      const y = match.design.bbox[1];
-      const width = match.design.bbox[2];
-      const height = match.design.bbox[3];
-      const label = match.design.label;
+      const x = match.bbox[0];
+      const y = match.bbox[1];
+      const width = match.bbox[2];
+      const height = match.bbox[3];
+      const label = match.label;
+      const labelSimilarity = match.labelSimilarity;
 
       // if IoU < 0.5, draw Red box, other would be drawn skyblue
 
-      if (iou < 0.5) {
+      if (iou !== null && labelSimilarity > 0.5) {
+        context.strokeStyle = "#00FFFF";
+        context.lineWidth = 1;
+        context.strokeRect(x, y, width, height);
+
+        // Draw the label background.
+        const content = "Similarity: " + (100 * iou).toFixed(2) + "%";
+        context.fillStyle = "#00FFFF";
+        const textWidth = context.measureText(content).width;
+        const textHeight = parseInt(font, 10); // base 10
+        context.fillRect(x, y, textWidth + 4, textHeight + 4);
+
+        // Draw the text last to ensure it's on top.
+        context.fillStyle = "#000000";
+        context.fillText(content, x, y);
+      } else {
         context.strokeStyle = "#FF0000";
         context.lineWidth = 4;
         context.strokeRect(x, y, width, height);
@@ -80,21 +96,7 @@ const compareTo = (imgWidth, imgHeight, boxes1, boxes2) => {
         context.fillRect(x, y, textWidth + 4, textHeight + 4);
 
         // Draw the text last to ensure it's on top.
-        context.fillStyle = "#000000";
-        context.fillText(label, x, y);
-      } else {
-        context.strokeStyle = "#00FFFF";
-        context.lineWidth = 1;
-        context.strokeRect(x, y, width, height);
-
-        // Draw the label background.
-        context.fillStyle = "#00FFFF";
-        const textWidth = context.measureText(label).width;
-        const textHeight = parseInt(font, 10); // base 10
-        context.fillRect(x, y, textWidth + 4, textHeight + 4);
-
-        // Draw the text last to ensure it's on top.
-        context.fillStyle = "#000000";
+        context.fillStyle = "#FFFFFF";
         context.fillText(label, x, y);
       }
     });
@@ -347,8 +349,8 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
                         compareTo(
                           data.imgWidth,
                           data.imgHeight,
-                          prediction,
-                          layer
+                          layer,
+                          prediction
                         )
                       }
                       disabled={!isReady}

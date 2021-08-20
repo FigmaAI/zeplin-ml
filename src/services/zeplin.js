@@ -1,6 +1,7 @@
 import http, { handleResponse } from "../utils/http";
 import { APP_URL, ZEPLIN_CLIENT_ID, ZEPLIN_CLIENT_SECRET } from "../constants";
 import stringComparison from "string-comparison";
+import { getOverlapSize } from "overlap-area";
 
 const ZEPLIN_API_URL = "https://api.zeplin.dev/v1";
 
@@ -134,39 +135,28 @@ export function ExtractComponents(raw) {
 
 //BoxMatcher 코드 시작
 
-const IOU_THRESHOLD = 0.5;
-const NAME_THRESHOLD = 0.5;
 const cosine = stringComparison.cosine;
-
-function toNameMap(boxes) {
-  return boxes.reduce((map, box) => {
-    map[box.label] = map[box.label] ?? [];
-    map[box.label].push(box);
-    return map;
-  }, {});
-}
-
-function bestMatch(key, candidates) {
-  return cosine.sortMatch(key, candidates).reduce(
-    (acc, v) => {
-      if (v.rating > acc.rating) return v;
-      return acc;
-    },
-    { rating: 0 }
-  );
-}
 
 function boxArea([, , w, h]) {
   return w * h;
 }
 
 function computeOverlappingArea([x1, y1, w1, h1], [x2, y2, w2, h2]) {
-  const left = Math.max(x1, x2);
-  const right = Math.min(x1 + w1, x2 + w2);
-  const top = Math.max(y1, y2);
-  const bottom = Math.min(y1 + h1, y2 + h2);
+  const points1 = [
+    [x1, y1],
+    [x1 + w1, y1],
+    [x1 + w1, y1 + h1],
+    [x1, y1 + h1],
+  ];
 
-  return (right - left) * (bottom - top);
+  const points2 = [
+    [x2, y2],
+    [x2 + w2, y2],
+    [x2 + w2, y2 + h2],
+    [x2, y2 + h2],
+  ];
+
+  return getOverlapSize(points1, points2);
 }
 
 function computeIoU(box1, box2) {
@@ -175,37 +165,22 @@ function computeIoU(box1, box2) {
   return overlap / (union - overlap);
 }
 
-function matchGroup(designGroup, predictionGroup) {
-  return designGroup
-    .map((e) => {
-      for (const t of predictionGroup) {
-        const iou = computeIoU(e, t);
-        // if (iou < IOU_THRESHOLD) continue;
-        return {
-          iou,
-          design: e,
-          prediction: t,
-        };
-      }
-    })
-    .filter((e) => e);
-}
-
 export function matchBoxes(design, prediction) {
-  const designMap = toNameMap(design);
-  const predictionMap = toNameMap(prediction);
-  const predictionNames = Object.keys(predictionMap);
+  prediction.forEach((predictItem) => {
+    design.forEach((designItem) => {
+      const iou = computeIoU(predictItem, designItem);
 
-  const result = [];
-  for (const designName of Object.keys(designMap)) {
-    const match = bestMatch(designName, predictionNames);
-    if (match.rating < NAME_THRESHOLD) continue;
-    const matches = matchGroup(
-      designMap[designName],
-      predictionMap[match.member]
-    );
-    result.push(...matches);
-  }
+      if (iou > 0.5) {
+        const similarity = cosine.similarity(
+          predictItem.label,
+          designItem.label
+        );
+        predictItem["iou"] = iou;
+        predictItem["labelSimilarity"] = similarity;
+        predictItem["design"] = designItem;
+      }
+    });
+  });
 
-  return result;
+  return prediction;
 }
