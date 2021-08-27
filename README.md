@@ -163,7 +163,16 @@ You'll find the log under **Application Logs**.
 
 ## Support Zeplin-ML
 
-If you have a question or a suggestion or found a bug, please tell us using the [issue tracker](https://github.com/dusskapark/zeplin-ml/issues) of this project. Also We'd love to have your Pull Request for helping `Zeplin-ML`! 
+If you have a question or a suggestion or found a bug, please tell us using the [issue tracker](https://github.com/dusskapark/zeplin-ml/issues) of this project. Also We'd love to have your Pull Request for helping `Zeplin-ML`!
+
+
+
+ ## References
+
+Please note that this project was created with the help of the following projects.
+
+- [Zeplin Slides](https://github.com/mertkahyaoglu/zeplin-google-slides)
+- [TFJS-object-detection](https://github.com/hugozanini/TFJS-object-detection)
 
 
 
