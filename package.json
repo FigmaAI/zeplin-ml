@@ -50,5 +50,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://public-cdn.zeplin.dev/"
+  "proxy": "https://public-cdn.zeplin.dev/",
+  "license": "MIT"
+
 }
