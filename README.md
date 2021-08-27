@@ -49,7 +49,7 @@ Follow the below instructions to deploy your customized app using Heroku and Nod
 2. Clone this GitHub repository.
 
     ```shell
-    git clone https://github.com/dusskapark/zeplin-ml
+    $ git clone https://github.com/dusskapark/zeplin-ml
     ```
 3. `cd` into `zeplin-ml` directory.
 
@@ -93,9 +93,9 @@ Follow the below instructions to deploy your customized app using Heroku and Nod
 1. Set your Zeplin Client ID, Secret, RedirectUri using an environment variable.
 
     ```shell
-    heroku config:set REACT_APP_ZEPLIN_CLIENT_ID={YOUR ZEPLIN CLINET ID}
-    heroku config:set REACT_APP_ZEPLIN_CLIENT_SECRET={YOUR ZEPLIN CLINET SECRET}
-    heroku config:set REACT_APP_APP_URL={YOUR APP URL}
+    $ heroku config:set REACT_APP_ZEPLIN_CLIENT_ID={YOUR ZEPLIN CLINET ID}
+    $ heroku config:set REACT_APP_ZEPLIN_CLIENT_SECRET={YOUR ZEPLIN CLINET SECRET}
+    $ heroku config:set REACT_APP_APP_URL={YOUR APP URL}
     ```
 
 2. Copy your environment variable into the `.env` file for local testing.
@@ -111,7 +111,7 @@ Follow the below instructions to deploy your customized app using Heroku and Nod
 4. Run the app locally to preview your changes:
 
     ```shell
-    heroku local
+    $ heroku local
     ```
    View the app by browsing to [localhost:5000](http://localhost:5000/).
 
