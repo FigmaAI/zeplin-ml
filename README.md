@@ -46,7 +46,7 @@ Follow the below instructions to deploy your customized app using Heroku and Nod
     - [Node.js](https://nodejs.org/en/)
     - Items listed [here](#Prerequirements)
 
-2. Clone this [line-liff-starter](https://github.com/dusskapark/zeplin-ml) GitHub repository.
+2. Clone this GitHub repository.
 
     ```shell
     git clone https://github.com/dusskapark/zeplin-ml
@@ -72,7 +72,7 @@ Follow the below instructions to deploy your customized app using Heroku and Nod
     $ heroku create {Heroku app name}
     ```
 
-3. Take a note of your app's URL (`https://{Heroku app name}.herokuapp.com`). You'll need it when you add the app to LIFF.
+3. Take a note of your app's URL (`https://{Heroku app name}.herokuapp.com`). You'll need it when you add the app to Zeplin.
 
 4. Add a remote for Heroku to your local repository.
 
@@ -163,7 +163,7 @@ You'll find the log under **Application Logs**.
 
 ## Support Zeplin-ML
 
-If you have a question or a suggestion or found a bug, please tell us using the [issue tracker](https://github.com/dusskapark/zeplin-ml/issues) of this project. We'd love to have your Pull Request for helping hand on `Zeplin-ML`! 
+If you have a question or a suggestion or found a bug, please tell us using the [issue tracker](https://github.com/dusskapark/zeplin-ml/issues) of this project. Also We'd love to have your Pull Request for helping `Zeplin-ML`! 
 
 
 
