@@ -38,7 +38,7 @@ const getLabelByID = (classes, i) => {
   return label[0].name;
 };
 
-const compareTo = (imgWidth, imgHeight, boxes1, boxes2) => {
+const compareTo = (pid, screenId, imgWidth, imgHeight, boxes1, boxes2) => {
   console.log("Comparing designs and predictions...");
 
   try {
@@ -98,6 +98,17 @@ const compareTo = (imgWidth, imgHeight, boxes1, boxes2) => {
         // Draw the text last to ensure it's on top.
         context.fillStyle = "#FFFFFF";
         context.fillText(label, x, y);
+        const zeplinX = x / imgWidth;
+        const zeplinY = y / imgHeight;
+
+        const params = {
+          content: label,
+          position: { x: zeplinX, y: zeplinY },
+          color: "peach",
+        };
+
+        const note = CreateNote(pid, screenId, params);
+        console.log(note);
       }
     });
   } catch (e) {
@@ -263,17 +274,6 @@ const runPrediction = async (
       context.fillStyle = "#000000";
       context.fillText(content, x, y);
       console.log("detected: ", item);
-
-      // const zeplinX = x / data.imgWidth;
-      // const zeplinY = y / data.imgHeight;
-      // const params = {
-      //   content: content,
-      //   position: { x: zeplinX, y: zeplinY },
-      //   color: "peach",
-      // };
-
-      // const note = await CreateNote(data.pid, data.screenId, params);
-      // console.log(note);
     }
   } catch (e) {
     console.log(e.message);
@@ -347,6 +347,8 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
                     <Button
                       onClick={() =>
                         compareTo(
+                          data.pid,
+                          data.screenId,
                           data.imgWidth,
                           data.imgHeight,
                           layer,
