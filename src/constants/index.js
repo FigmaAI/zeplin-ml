@@ -4,3 +4,4 @@ export const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 export const GOOGLE_API_KEY = process.env.REACT_APP_API_KEY;
 export const ZEPLIN_CLIENT_ID = process.env.REACT_APP_ZEPLIN_CLIENT_ID;
 export const ZEPLIN_CLIENT_SECRET = process.env.REACT_APP_ZEPLIN_CLIENT_SECRET;
+export const CLOVA_TOKEN = process.env.REACT_APP_CLOVA_TOKEN;
