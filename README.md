@@ -18,7 +18,7 @@
 
 ## Overview
 
-A project using [TensorFlow JS](https://www.tensorflow.org/js) to create the “spell check” of design systems, that helps designers by keep-watching numerous design elements instead of humans. The best way to illustrate this is to see it in action via the animation below:
+A project using [TensorFlow JS](https://www.tensorflow.org/js) to create the `spell check` of design systems, that helps designers by keep-watching numerous design elements instead of humans. The best way to illustrate this is to see it in action via the animation below:
 
 [**Demo (Youtube)**](https://youtu.be/ec3AEtY-qEY) 
 
