@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import queryString from "query-string";
 import ArrowBack from "@material-ui/icons/ArrowBack";
 import { Box, Link, Button, Paper, Typography } from "@material-ui/core";
-
 import Main from "../layouts/Main";
 import { fetchProjectScreensGroupedBySection } from "../services/zeplin";
 import Loader from "../components/Loader";

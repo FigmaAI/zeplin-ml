@@ -14,7 +14,7 @@
     "name": "RICO (mobilenet-v2)",
     "value": ["1", "RICO", "mobilenet-v2"],
     "cli": {
-      "boxes": "3",
+      "boxes": "1",
       "scores": "4",
       "classes": "2"
     }
@@ -37,7 +37,7 @@
     "cli": {
       "boxes": "7",
       "scores": "1",
-      "classes": "4"
+      "classes": "3"
     }
   },
   {
