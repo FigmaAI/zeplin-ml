@@ -1,8 +1,8 @@
 [
   {
     "id": "0",
-    "name": "RICO (mobilenet-v1)",
-    "value": ["0", "RICO", "mobilenet-v1"],
+    "name": "RICO (7.8k trained)",
+    "value": ["0", "RICO", "mobilenet-v2-8k"],
     "cli": {
       "boxes": "3",
       "scores": "2",
@@ -11,8 +11,8 @@
   },
   {
     "id": "1",
-    "name": "RICO (mobilenet-v2)",
-    "value": ["1", "RICO", "mobilenet-v2"],
+    "name": "RICO (50k trained)",
+    "value": ["1", "RICO", "mobilenet-v2-50k"],
     "cli": {
       "boxes": "1",
       "scores": "4",
@@ -22,8 +22,8 @@
 
   {
     "id": "2",
-    "name": "MOBBIN (mobilenet-v1)",
-    "value": ["2", "MOBBIN", "mobilenet-v1"],
+    "name": "MOBBIN (7.8k trained)",
+    "value": ["2", "MOBBIN", "mobilenet-v2-8k"],
     "cli": {
       "boxes": "6",
       "scores": "0",
@@ -32,21 +32,11 @@
   },
   {
     "id": "3",
-    "name": "MOBBIN (mobilenet-v2)",
-    "value": ["3", "MOBBIN", "mobilenet-v2"],
+    "name": "MOBBIN (50k trained)",
+    "value": ["3", "MOBBIN", "mobilenet-v2-50k"],
     "cli": {
       "boxes": "7",
       "scores": "1",
-      "classes": "3"
-    }
-  },
-  {
-    "id": "4",
-    "name": "MOBBIN (resnet50-v1)",
-    "value": ["4", "MOBBIN", "resnet50-v1"],
-    "cli": {
-      "boxes": "0",
-      "scores": "2",
       "classes": "3"
     }
   }
