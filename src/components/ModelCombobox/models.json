@@ -1,10 +1,53 @@
 [
   {
-    "name": "RICO Dataset",
-    "value": "RICO"
+    "id": "0",
+    "name": "RICO (mobilenet-v1)",
+    "value": ["0", "RICO", "mobilenet-v1"],
+    "cli": {
+      "boxes": "3",
+      "scores": "2",
+      "classes": "1"
+    }
   },
   {
-    "name": "MOBBIN Dataset",
-    "value": "MOBBIN"
+    "id": "1",
+    "name": "RICO (mobilenet-v2)",
+    "value": ["1", "RICO", "mobilenet-v2"],
+    "cli": {
+      "boxes": "3",
+      "scores": "4",
+      "classes": "2"
+    }
+  },
+
+  {
+    "id": "2",
+    "name": "MOBBIN (mobilenet-v1)",
+    "value": ["2", "MOBBIN", "mobilenet-v1"],
+    "cli": {
+      "boxes": "6",
+      "scores": "0",
+      "classes": "1"
+    }
+  },
+  {
+    "id": "3",
+    "name": "MOBBIN (mobilenet-v2)",
+    "value": ["3", "MOBBIN", "mobilenet-v2"],
+    "cli": {
+      "boxes": "7",
+      "scores": "1",
+      "classes": "4"
+    }
+  },
+  {
+    "id": "4",
+    "name": "MOBBIN (resnet50-v1)",
+    "value": ["4", "MOBBIN", "resnet50-v1"],
+    "cli": {
+      "boxes": "0",
+      "scores": "2",
+      "classes": "3"
+    }
   }
 ]

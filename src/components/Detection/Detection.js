@@ -171,14 +171,14 @@ const renderPredictions = (
   width,
   height,
   classesDir,
-  savedModelShow
+  cli
 ) => {
   console.log("Highlighting results...");
 
   //Getting predictions
-  const boxes = predictions[savedModelShow.boxes].arraySync();
-  const scores = predictions[savedModelShow.scores].arraySync();
-  const classes = predictions[savedModelShow.classes].dataSync();
+  const boxes = predictions[cli.boxes].arraySync();
+  const scores = predictions[cli.scores].arraySync();
+  const classes = predictions[cli.classes].dataSync();
   const detectionObjects = [];
 
   scores[0].forEach((score, i) => {
@@ -209,7 +209,7 @@ const runPrediction = async (
   data,
   model,
   classesDir,
-  savedModelShow,
+  cli,
   setLoading,
   setPrediction
 ) => {
@@ -236,7 +236,7 @@ const runPrediction = async (
       data.imgWidth,
       data.imgHeight,
       classesDir,
-      savedModelShow
+      cli
     );
 
     console.log("detected: ", detections);
@@ -280,7 +280,7 @@ const runPrediction = async (
   }
 };
 
-const Detection = ({ model, data, classesDir, savedModelShow }) => {
+const Detection = ({ model, data, classesDir, cli }) => {
   const [loading, setLoading] = useState();
   const [layer, setLayer] = useState();
   const [prediction, setPrediction] = useState();
@@ -332,7 +332,7 @@ const Detection = ({ model, data, classesDir, savedModelShow }) => {
                           data,
                           model,
                           classesDir,
-                          savedModelShow,
+                          cli,
                           setLoading,
                           setPrediction
                         );

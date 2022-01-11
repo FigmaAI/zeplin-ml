@@ -27,9 +27,11 @@ export default function Create() {
   };
 
   const onPredict = () => {
+    
+
     history.push({
       pathname: "/predict",
-      search: "?pid=" + selectedProject.id + "&model=" + selectedModel
+      search: "?pid=" + selectedProject.id + "&model_id=" + selectedModel[0]
     });
   };
 

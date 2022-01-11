@@ -8,6 +8,7 @@ import Main from "../layouts/Main";
 import { fetchProjectScreensGroupedBySection } from "../services/zeplin";
 import Loader from "../components/Loader";
 import Detection from "../components/Detection";
+import modelList from "../components/ModelCombobox/models.json";
 import * as tf from "@tensorflow/tfjs";
 
 tf.setBackend("webgl");
@@ -19,6 +20,7 @@ export default function Predict(props) {
   const [selectedData, setSelectedData] = useState(null);
   const [totalLength, setTotalLength] = useState(null);
   const [classesDir, setClassesDir] = useState(null);
+  const [cli, setCli] = useState(null);
 
   const history = useHistory();
   const query = queryString.parse(history.location.search);
@@ -28,17 +30,9 @@ export default function Predict(props) {
     history.replace("/create");
   };
 
-  const savedModelShow = {
-    RICO: {
-      boxes: "3",
-      scores: "2",
-      classes: "1",
-    },
-    MOBBIN: {
-      boxes: "6",
-      scores: "0",
-      classes: "1",
-    },
+  const getModelByID = (models, i) => {
+    let model = models.filter((x) => x.id === i);
+    return model[0];
   };
 
   const imageReplacer = (screen) => {
@@ -50,14 +44,19 @@ export default function Predict(props) {
     return image;
   };
   const loadModel = async () => {
+    const model = getModelByID(modelList, query.model_id);
+
     const loadedModel = await tf.loadGraphModel(
-      "/models/" + query.model + "/model.json"
+      "/models/" + model.value[1] + "/" + model.value[2] + "/model.json"
     );
     const classesDir = require("../../public/models/" +
-      query.model +
+      model.value[1] +
+      "/" +
+      model.value[2] +
       "/label_map.json");
 
     setClassesDir(classesDir);
+    setCli(model.cli);
     setModel(loadedModel);
   };
 
@@ -133,7 +132,7 @@ export default function Predict(props) {
             data={selectedData}
             model={model}
             classesDir={classesDir}
-            savedModelShow={savedModelShow[query.model]}
+            cli={cli}
           />
         </>
       )}

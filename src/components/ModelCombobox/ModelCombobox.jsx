@@ -21,8 +21,9 @@ export default function ModelCombobox({ onModelSelect }) {
 
     setOptions(
       models.map((model) => ({
+        id: model.id,
         name: model.name,
-        value: model.value,
+        value: model.value
       }))
     );
   };
